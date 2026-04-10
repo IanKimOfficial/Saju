@@ -238,8 +238,8 @@ header {
   .card { padding: 20px 16px; }
   input[type="date"], input[type="time"] {
     font-size: 0.875rem;
-    padding: 10px 8px;
-    max-width: 100%;
+    padding: 12px 16px;
+    width: 100%;
   }
 }
 
@@ -270,6 +270,9 @@ input, select {
   font-size: 1rem;
   transition: border-color var(--transition), box-shadow var(--transition);
   width: 100%;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 input:focus, select:focus {
