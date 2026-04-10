@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mystic Oracle · 신비의 운세</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&family=Noto+Sans+KR:wght@300;400;700&family=Noto+Sans+JP:wght@300;400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root {
   --gold: #c9a84c;
@@ -660,6 +661,30 @@ select option { background: var(--bg2); color: var(--text); }
 .share-btn.line:hover { background: #06c755; color: #fff; }
 .share-btn.copy { border-color: var(--gold); }
 .share-btn.copy:hover { background: var(--gold); color: var(--ink); }
+.share-btn.image { border-color: #9b59b6; }
+.share-btn.image:hover { background: #9b59b6; color: #fff; }
+.btn-save-img {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px 24px;
+  border-radius: 8px;
+  border: 1.5px solid var(--gold);
+  background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+  text-shadow: 0 0 10px var(--glow);
+}
+.btn-save-img:hover {
+  background: rgba(201,168,76,0.25);
+  box-shadow: 0 0 18px var(--glow);
+  transform: translateY(-1px);
+}
 
 .btn-back {
   background: transparent;
@@ -876,6 +901,7 @@ footer {
         </div>
       </div>
 
+      <button class="btn-save-img" onclick="saveAsImage()" id="btnSaveImg">🖼 Save as Image &amp; Share</button>
       <button class="btn-back" onclick="goBack()" id="btnBack">↩ Read Again</button>
     </div>
   </div>
@@ -967,6 +993,7 @@ const LANGS = {
     shareTitle: 'Share Your Fortune',
     copyText: 'Copy',
     btnBack: '↩ Read Again',
+    btnSaveImg: '🖼 Save as Image & Share',
     scoreLabel: 'Fortune',
     pillarLabels: ['Year', 'Month', 'Day', 'Hour'],
     fortuneCategories: ['Love & Heart', 'Career & Wealth', 'Health & Vitality', 'Wisdom & Growth'],
@@ -997,6 +1024,7 @@ const LANGS = {
     shareTitle: '운세 공유하기',
     copyText: '복사',
     btnBack: '↩ 처음으로 돌아가기',
+    btnSaveImg: '🖼 이미지로 저장 & 공유',
     scoreLabel: '운세',
     pillarLabels: ['년주', '월주', '일주', '시주'],
     fortuneCategories: ['애정운', '재물·직업운', '건강운', '학업·성장운'],
@@ -1027,6 +1055,7 @@ const LANGS = {
     shareTitle: '運勢をシェア',
     copyText: 'コピー',
     btnBack: '↩ もう一度見る',
+    btnSaveImg: '🖼 画像で保存＆シェア',
     scoreLabel: '運勢',
     pillarLabels: ['年柱', '月柱', '日柱', '時柱'],
     fortuneCategories: ['恋愛運', '金運·仕事運', '健康運', '学業·成長運'],
@@ -1057,6 +1086,7 @@ const LANGS = {
     shareTitle: '分享运势',
     copyText: '复制',
     btnBack: '↩ 重新查看',
+    btnSaveImg: '🖼 保存为图片并分享',
     scoreLabel: '运势',
     pillarLabels: ['年柱', '月柱', '日柱', '时柱'],
     fortuneCategories: ['感情运', '财运·事业运', '健康运', '学业·成长运'],
@@ -1087,6 +1117,7 @@ const LANGS = {
     shareTitle: 'Comparte tu Fortuna',
     copyText: 'Copiar',
     btnBack: '↩ Leer de Nuevo',
+    btnSaveImg: '🖼 Guardar como Imagen',
     scoreLabel: 'Fortuna',
     pillarLabels: ['Año', 'Mes', 'Día', 'Hora'],
     fortuneCategories: ['Amor y Corazón', 'Carrera y Riqueza', 'Salud y Vitalidad', 'Sabiduría y Crecimiento'],
@@ -1125,6 +1156,7 @@ function setLang(lang) {
   document.getElementById('shareTitle').textContent = L.shareTitle;
   document.getElementById('copyText').textContent = L.copyText;
   document.getElementById('btnBack').textContent = L.btnBack;
+  document.getElementById('btnSaveImg').textContent = L.btnSaveImg;
 
   // Update gender/calendar select options
   const genderSel = document.getElementById('inputGender');
@@ -1666,6 +1698,59 @@ function renderResult() {
     luckyHTML += `<div class="lucky-badge">${item.icon} <strong>${item.label}:</strong> ${item.val}</div>`;
   });
   document.getElementById('luckyItems').innerHTML = luckyHTML;
+}
+
+async function saveAsImage() {
+  const btn = document.getElementById('btnSaveImg');
+  const L = LANGS[currentLang];
+  btn.textContent = '⏳ ...';
+  btn.disabled = true;
+
+  try {
+    const card = document.querySelector('#result .card');
+    const canvas = await html2canvas(card, {
+      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#07091a',
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      logging: false
+    });
+
+    canvas.toBlob(async (blob) => {
+      const fileName = `fortune-${fortuneData.name || 'mystic'}.png`;
+      const file = new File([blob], fileName, { type: 'image/png' });
+
+      // 모바일: Web Share API로 이미지+링크 공유
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: L.shareTitle,
+            text: getShareText(),
+            url: window.location.href
+          });
+          btn.textContent = L.btnSaveImg;
+          btn.disabled = false;
+          return;
+        } catch (e) {
+          // 취소 시 fallback
+        }
+      }
+
+      // PC: 이미지 다운로드
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+      btn.textContent = L.btnSaveImg;
+      btn.disabled = false;
+    }, 'image/png');
+  } catch (e) {
+    btn.textContent = L.btnSaveImg;
+    btn.disabled = false;
+  }
 }
 
 function goBack() {
