@@ -855,6 +855,7 @@ footer {
       <span class="corner-ornament corner-bl">✦</span>
       <span class="corner-ornament corner-br">✦</span>
 
+      <div id="captureZone">
       <div class="result-header">
         <div class="result-name" id="resultName"></div>
         <div class="result-date" id="resultDate"></div>
@@ -887,6 +888,7 @@ footer {
       <div class="divider"><span class="divider-symbol">✦</span></div>
       <div class="card-title" id="luckyTitle">✧ Lucky Charms ✧</div>
       <div class="lucky-items" id="luckyItems"></div>
+      </div><!-- /captureZone -->
 
       <!-- Share -->
       <div class="divider"><span class="divider-symbol">✦</span></div>
@@ -1708,7 +1710,7 @@ async function saveAsImage() {
 
   try {
     const card = document.querySelector('#result .card');
-    const canvas = await html2canvas(card, {
+    const canvas = await html2canvas(document.getElementById('captureZone'), {
       backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#07091a',
       scale: 2,
       useCORS: true,
