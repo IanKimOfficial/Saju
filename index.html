@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mystic Oracle · 신비의 운세</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&family=Noto+Sans+KR:wght@300;400;700&family=Noto+Sans+JP:wght@300;400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #c9a84c;
+  --gold-light: #f0d080;
+  --gold-dark: #8b6914;
+  --parchment: #f5e6c8;
+  --ink: #1a0e00;
+  --mystic-purple: #4a1a6e;
+  --mystic-blue: #0d1b3e;
+  --mystic-deep: #07091a;
+  --red-accent: #8b1a1a;
+  --teal: #1a5f7a;
+  --transition: 0.3s ease;
+}
+
+[data-theme="light"] {
+  --bg: #f0e6d0;
+  --bg2: #e8d8b8;
+  --bg3: #ddc99a;
+  --surface: rgba(245,230,190,0.95);
+  --surface2: rgba(230,210,170,0.9);
+  --text: #1a0e00;
+  --text2: #3d2600;
+  --text3: #6b4400;
+  --border: rgba(139,105,20,0.4);
+  --star: rgba(139,105,20,0.3);
+  --glow: rgba(201,168,76,0.4);
+  --card-shadow: 0 8px 32px rgba(100,60,0,0.25);
+  --overlay: rgba(240,220,180,0.85);
+}
+
+[data-theme="dark"] {
+  --bg: #07091a;
+  --bg2: #0d1230;
+  --bg3: #12184a;
+  --surface: rgba(15,12,35,0.95);
+  --surface2: rgba(25,18,55,0.9);
+  --text: #f0d080;
+  --text2: #c9a84c;
+  --text3: #a07830;
+  --border: rgba(201,168,76,0.3);
+  --star: rgba(255,255,255,0.8);
+  --glow: rgba(100,60,200,0.5);
+  --card-shadow: 0 8px 32px rgba(0,0,0,0.7);
+  --overlay: rgba(7,9,26,0.85);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'IM Fell English', 'Noto Sans KR', serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background var(--transition), color var(--transition);
+  overflow-x: hidden;
+}
+
+/* ── Canvas Stars ── */
+#starfield {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── Layout ── */
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+}
+
+/* ── Header ── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0 10px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.logo {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 0 20px var(--glow);
+  letter-spacing: 2px;
+}
+
+.logo span { color: var(--text); }
+
+.header-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Language selector */
+.lang-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 1px;
+  transition: all var(--transition);
+}
+.lang-btn:hover, .lang-btn.active {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
+}
+
+/* Theme toggle */
+.theme-toggle {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex; align-items:center; justify-content:center;
+  transition: all var(--transition);
+}
+.theme-toggle:hover { background: var(--gold); color: var(--ink); }
+
+/* ── Hero ── */
+.hero {
+  text-align: center;
+  padding: 40px 0 30px;
+}
+
+.hero-emblem {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 20px var(--glow));
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.hero h1 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.6rem, 5vw, 2.8rem);
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow: 0 0 30px var(--glow);
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+
+.hero-sub {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  color: var(--text3);
+  letter-spacing: 1px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0;
+  color: var(--gold-dark);
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  opacity: 0.5;
+}
+.divider-symbol { font-size: 1.2rem; color: var(--gold); }
+
+/* ── Card ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(8px);
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.card-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* ── Form ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 560px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .card { padding: 20px 16px; }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full { grid-column: 1 / -1; }
+
+label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+input, select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--text);
+  font-family: 'IM Fell English', 'Noto Sans KR', serif;
+  font-size: 1rem;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  width: 100%;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(201,168,76,0.3);
+}
+
+input::placeholder { color: var(--text3); opacity: 0.6; }
+
+select option { background: var(--bg2); color: var(--text); }
+
+/* ── Button ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all var(--transition);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+  color: var(--ink);
+  box-shadow: 0 4px 20px rgba(201,168,76,0.4);
+  width: 100%;
+  margin-top: 8px;
+  font-size: 1rem;
+  padding: 16px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(201,168,76,0.6);
+}
+
+.btn-primary:active { transform: translateY(0); }
+
+/* ── Loading ── */
+#loading {
+  display: none;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.crystal-ball {
+  font-size: 5rem;
+  animation: pulse 1.5s ease-in-out infinite;
+  display: block;
+  margin-bottom: 20px;
+}
+
+@keyframes pulse {
+  0%,100% { transform: scale(1); filter: drop-shadow(0 0 10px var(--glow)); }
+  50% { transform: scale(1.1); filter: drop-shadow(0 0 30px var(--glow)); }
+}
+
+.loading-text {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--text2);
+  letter-spacing: 1px;
+}
+
+.loading-bar {
+  width: 200px;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 20px auto 0;
+  overflow: hidden;
+}
+
+.loading-bar::after {
+  content: '';
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold-light));
+  animation: loadingBar 2s ease-in-out infinite;
+}
+
+@keyframes loadingBar {
+  0% { width: 0; margin-left: 0; }
+  50% { width: 100%; margin-left: 0; }
+  100% { width: 0; margin-left: 100%; }
+}
+
+/* ── Result ── */
+#result { display: none; }
+
+.result-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.result-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.3rem, 4vw, 2rem);
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.result-date {
+  font-size: 0.85rem;
+  color: var(--text3);
+  font-family: 'Cinzel', serif;
+  letter-spacing: 1px;
+}
+
+/* Saju pillars display */
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 24px 0;
+}
+
+.pillar {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 8px;
+  text-align: center;
+}
+
+.pillar-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.pillar-stem {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gold);
+  display: block;
+  line-height: 1;
+}
+
+.pillar-branch {
+  font-size: 1.5rem;
+  color: var(--text2);
+  display: block;
+  margin-top: 4px;
+}
+
+.pillar-element {
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  margin-top: 6px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.el-wood { background: rgba(34,139,34,0.2); color: #4a9; }
+.el-fire { background: rgba(180,60,0,0.2); color: #e76; }
+.el-earth { background: rgba(139,100,0,0.2); color: #b90; }
+.el-metal { background: rgba(150,150,170,0.2); color: #aac; }
+.el-water { background: rgba(0,80,180,0.2); color: #68c; }
+
+/* Fortune sections */
+.fortune-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 20px 0;
+}
+
+@media (max-width: 560px) {
+  .fortune-grid { grid-template-columns: 1fr; }
+  .pillars { grid-template-columns: repeat(2, 1fr); }
+}
+
+.fortune-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.fortune-item-icon {
+  font-size: 1.6rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.fortune-item-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+
+.fortune-item-score {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 6px;
+}
+
+.star-filled { color: var(--gold); font-size: 0.85rem; }
+.star-empty { color: var(--border); font-size: 0.85rem; }
+
+.fortune-item-text {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text2);
+}
+
+.fortune-main {
+  background: linear-gradient(135deg, var(--surface), var(--surface2));
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 20px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.fortune-main::after {
+  content: '☽';
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 5rem;
+  opacity: 0.05;
+  color: var(--gold);
+  pointer-events: none;
+}
+
+.fortune-main-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.fortune-main-text {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text);
+  font-style: italic;
+}
+
+.lucky-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.lucky-badge {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Overall score */
+.overall-score {
+  text-align: center;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.score-ring {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  background: conic-gradient(var(--gold) calc(var(--pct)*1%), var(--surface2) 0);
+  position: relative;
+}
+
+.score-ring::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: var(--surface);
+}
+
+.score-number {
+  position: relative;
+  z-index: 1;
+  font-family: 'Cinzel', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.score-label {
+  position: relative;
+  z-index: 1;
+  font-size: 0.55rem;
+  letter-spacing: 1px;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+
+.score-desc {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+/* ── Share ── */
+.share-section { margin-top: 10px; }
+
+.share-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.share-btns {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: 'Cinzel', serif;
+  letter-spacing: 1px;
+  text-decoration: none;
+}
+
+.share-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+.share-btn.twitter { border-color: #1da1f2; }
+.share-btn.twitter:hover { background: #1da1f2; color: #fff; }
+.share-btn.facebook { border-color: #1877f2; }
+.share-btn.facebook:hover { background: #1877f2; color: #fff; }
+.share-btn.kakao { border-color: #fee500; }
+.share-btn.kakao:hover { background: #fee500; color: #3c1e1e; }
+.share-btn.line { border-color: #06c755; }
+.share-btn.line:hover { background: #06c755; color: #fff; }
+.share-btn.copy { border-color: var(--gold); }
+.share-btn.copy:hover { background: var(--gold); color: var(--ink); }
+
+.btn-back {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  margin-top: 20px;
+  display: block;
+  width: 100%;
+  transition: all var(--transition);
+  text-align: center;
+}
+.btn-back:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ── Decorative corners ── */
+.corner-ornament {
+  position: absolute;
+  font-size: 1rem;
+  color: var(--gold);
+  opacity: 0.4;
+  pointer-events: none;
+}
+.corner-tl { top: 8px; left: 12px; }
+.corner-tr { top: 8px; right: 12px; }
+.corner-bl { bottom: 8px; left: 12px; }
+.corner-br { bottom: 8px; right: 12px; }
+
+/* ── Tooltip ── */
+.tooltip { position: relative; display: inline-block; }
+.tooltip-text {
+  visibility: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.tooltip:hover .tooltip-text { visibility: visible; }
+
+/* ── Copy notification ── */
+#copy-notice {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--gold);
+  color: var(--ink);
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  transition: transform 0.4s ease;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+#copy-notice.show { transform: translateX(-50%) translateY(0); }
+
+/* ── Footer ── */
+footer {
+  text-align: center;
+  padding: 20px 0;
+  color: var(--text3);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  font-family: 'Cinzel', serif;
+  opacity: 0.6;
+}
+</style>
+</head>
+<body data-theme="dark">
+<canvas id="starfield"></canvas>
+
+<div class="container">
+  <header>
+    <div class="logo">☽ Mystic <span>Oracle</span></div>
+    <div class="header-controls">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('ko')">한국어</button>
+      <button class="lang-btn" onclick="setLang('ja')">日本語</button>
+      <button class="lang-btn" onclick="setLang('zh')">中文</button>
+      <button class="lang-btn" onclick="setLang('es')">ES</button>
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀</button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero" id="heroSection">
+    <div class="hero-emblem">🔮</div>
+    <h1 id="heroTitle">Mystic Oracle</h1>
+    <p class="hero-sub" id="heroSub">Unveil the secrets the cosmos holds for you today</p>
+    <div class="divider"><span class="divider-symbol">✦</span></div>
+  </div>
+
+  <!-- Form -->
+  <div id="formSection">
+    <div class="card">
+      <span class="corner-ornament corner-tl">✦</span>
+      <span class="corner-ornament corner-tr">✦</span>
+      <span class="corner-ornament corner-bl">✦</span>
+      <span class="corner-ornament corner-br">✦</span>
+      <div class="card-title" id="formTitle">✧ Enter Your Birth Details ✧</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label id="labelName">Your Name</label>
+          <input type="text" id="inputName" placeholder="Enter your full name" autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label id="labelBirthDate">Birth Date</label>
+          <input type="date" id="inputBirthDate">
+        </div>
+        <div class="form-group">
+          <label id="labelBirthTime">Birth Time</label>
+          <input type="time" id="inputBirthTime" value="12:00">
+        </div>
+        <div class="form-group">
+          <label id="labelGender">Gender (for Saju)</label>
+          <select id="inputGender">
+            <option value="male">♂ Male</option>
+            <option value="female">♀ Female</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="labelCalendar">Calendar Type</label>
+          <select id="inputCalendar">
+            <option value="solar">Solar (Gregorian)</option>
+            <option value="lunar">Lunar (Korean)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="revealFortune()" id="btnReveal">
+        <span>🔮</span> <span id="btnRevealText">Reveal My Fortune</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="loading">
+    <span class="crystal-ball">🔮</span>
+    <p class="loading-text" id="loadingText">The stars are aligning for you...</p>
+    <div class="loading-bar"></div>
+  </div>
+
+  <!-- Result -->
+  <div id="result">
+    <div class="card">
+      <span class="corner-ornament corner-tl">✦</span>
+      <span class="corner-ornament corner-tr">✦</span>
+      <span class="corner-ornament corner-bl">✦</span>
+      <span class="corner-ornament corner-br">✦</span>
+
+      <div class="result-header">
+        <div class="result-name" id="resultName"></div>
+        <div class="result-date" id="resultDate"></div>
+      </div>
+
+      <!-- Overall Score -->
+      <div class="overall-score">
+        <div class="score-ring" id="scoreRing">
+          <span class="score-number" id="scoreNumber">82</span>
+          <span class="score-label" id="scoreLabel">Fortune</span>
+        </div>
+        <div class="score-desc" id="scoreDesc">Auspicious Day</div>
+      </div>
+
+      <!-- Saju Pillars -->
+      <div class="divider"><span class="divider-symbol">✦</span></div>
+      <div class="card-title" id="pillarsTitle">✧ Four Pillars of Destiny (사주) ✧</div>
+      <div class="pillars" id="pillarsDisplay"></div>
+
+      <!-- Main Fortune -->
+      <div class="fortune-main">
+        <div class="fortune-main-title" id="mainFortuneLabel">Today's Oracle</div>
+        <p class="fortune-main-text" id="mainFortune"></p>
+      </div>
+
+      <!-- Fortune Grid -->
+      <div class="fortune-grid" id="fortuneGrid"></div>
+
+      <!-- Lucky Items -->
+      <div class="divider"><span class="divider-symbol">✦</span></div>
+      <div class="card-title" id="luckyTitle">✧ Lucky Charms ✧</div>
+      <div class="lucky-items" id="luckyItems"></div>
+
+      <!-- Share -->
+      <div class="divider"><span class="divider-symbol">✦</span></div>
+      <div class="share-section">
+        <div class="share-title" id="shareTitle">Share Your Fortune</div>
+        <div class="share-btns">
+          <button class="share-btn twitter" onclick="shareTwitter()">𝕏 Twitter</button>
+          <button class="share-btn facebook" onclick="shareFacebook()">f Facebook</button>
+          <button class="share-btn kakao" onclick="shareKakao()">💬 KakaoTalk</button>
+          <button class="share-btn line" onclick="shareLine()">LINE</button>
+          <button class="share-btn copy" onclick="copyFortune()">📋 <span id="copyText">Copy</span></button>
+        </div>
+      </div>
+
+      <button class="btn-back" onclick="goBack()" id="btnBack">↩ Read Again</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>✦ Based on Korean Saju (四柱) Fortune System ✦</p>
+  </footer>
+</div>
+
+<div id="copy-notice">✓ Copied to clipboard!</div>
+
+<script>
+/* ═══════════════════════════════════════
+   STARFIELD CANVAS
+═══════════════════════════════════════ */
+const canvas = document.getElementById('starfield');
+const ctx = canvas.getContext('2d');
+let stars = [];
+let isDark = true;
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function initStars() {
+  stars = [];
+  for (let i = 0; i < 200; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5 + 0.3,
+      alpha: Math.random(),
+      speed: Math.random() * 0.005 + 0.002,
+      twinkle: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function drawStars() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!isDark) {
+    requestAnimationFrame(drawStars);
+    return;
+  }
+  stars.forEach(s => {
+    s.twinkle += s.speed;
+    const a = (Math.sin(s.twinkle) * 0.4 + 0.6) * 0.8;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,240,200,${a})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+
+window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
+resizeCanvas();
+initStars();
+drawStars();
+
+/* ═══════════════════════════════════════
+   THEME
+═══════════════════════════════════════ */
+function toggleTheme() {
+  isDark = !isDark;
+  document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  document.getElementById('themeBtn').textContent = isDark ? '☀' : '☾';
+}
+
+/* ═══════════════════════════════════════
+   LANGUAGES
+═══════════════════════════════════════ */
+const LANGS = {
+  en: {
+    heroTitle: 'Mystic Oracle',
+    heroSub: 'Unveil the secrets the cosmos holds for you today',
+    formTitle: '✧ Enter Your Birth Details ✧',
+    labelName: 'Your Name',
+    labelBirthDate: 'Birth Date',
+    labelBirthTime: 'Birth Time',
+    labelGender: 'Gender (for Saju)',
+    labelCalendar: 'Calendar Type',
+    btnReveal: 'Reveal My Fortune',
+    loadingTexts: ['The stars are aligning for you...', 'Consulting the ancient scrolls...', 'Reading the cosmic energies...'],
+    pillarsTitle: '✧ Four Pillars of Destiny (사주) ✧',
+    mainFortuneLabel: "Today's Oracle",
+    luckyTitle: '✧ Lucky Charms ✧',
+    shareTitle: 'Share Your Fortune',
+    copyText: 'Copy',
+    btnBack: '↩ Read Again',
+    scoreLabel: 'Fortune',
+    pillarLabels: ['Year', 'Month', 'Day', 'Hour'],
+    fortuneCategories: ['Love & Heart', 'Career & Wealth', 'Health & Vitality', 'Wisdom & Growth'],
+    fortuneIcons: ['❤', '💰', '🌿', '📖'],
+    luckyLabels: { color: 'Lucky Color', number: 'Lucky Number', direction: 'Direction', time: 'Best Hour', item: 'Lucky Item' },
+    genderMale: '♂ Male',
+    genderFemale: '♀ Female',
+    calSolar: 'Solar (Gregorian)',
+    calLunar: 'Lunar (Korean)',
+    copied: '✓ Copied to clipboard!',
+    scoreDescs: ['Challenging', 'Modest', 'Average', 'Good', 'Auspicious', 'Excellent', 'Extraordinary'],
+    shareMsg: (name, score) => `✨ ${name}'s fortune today: ${score}/100 — Revealed by Mystic Oracle 🔮`
+  },
+  ko: {
+    heroTitle: '신비의 운세',
+    heroSub: '오늘 우주가 당신에게 전하는 메시지를 확인하세요',
+    formTitle: '✧ 생년월일을 입력하세요 ✧',
+    labelName: '이름',
+    labelBirthDate: '생년월일',
+    labelBirthTime: '태어난 시간',
+    labelGender: '성별 (사주 용)',
+    labelCalendar: '달력 종류',
+    btnReveal: '오늘의 운세 보기',
+    loadingTexts: ['별자리가 정렬되고 있습니다...', '고대의 서책을 펼치는 중...', '우주의 기운을 읽는 중...'],
+    pillarsTitle: '✧ 사주 (四柱) ✧',
+    mainFortuneLabel: '오늘의 총운',
+    luckyTitle: '✧ 행운 아이템 ✧',
+    shareTitle: '운세 공유하기',
+    copyText: '복사',
+    btnBack: '↩ 다시 보기',
+    scoreLabel: '운세',
+    pillarLabels: ['년주', '월주', '일주', '시주'],
+    fortuneCategories: ['애정운', '재물·직업운', '건강운', '학업·성장운'],
+    fortuneIcons: ['❤', '💰', '🌿', '📖'],
+    luckyLabels: { color: '행운의 색', number: '행운의 숫자', direction: '행운의 방향', time: '좋은 시간', item: '행운 아이템' },
+    genderMale: '♂ 남성',
+    genderFemale: '♀ 여성',
+    calSolar: '양력',
+    calLunar: '음력',
+    copied: '✓ 클립보드에 복사되었습니다!',
+    scoreDescs: ['힘든 하루', '평범한 하루', '보통', '좋은 날', '길한 날', '대길한 날', '최고의 날'],
+    shareMsg: (name, score) => `✨ ${name}님의 오늘 운세: ${score}/100 — 신비의 운세 🔮`
+  },
+  ja: {
+    heroTitle: '神秘の運勢',
+    heroSub: '今日、宇宙があなたに伝えるメッセージを確認しましょう',
+    formTitle: '✧ 生年月日を入力してください ✧',
+    labelName: 'お名前',
+    labelBirthDate: '生年月日',
+    labelBirthTime: '生まれた時間',
+    labelGender: '性別（四柱推命用）',
+    labelCalendar: '暦の種類',
+    btnReveal: '今日の運勢を見る',
+    loadingTexts: ['星が整列しています...', '古代の書を開いています...', '宇宙のエネルギーを読んでいます...'],
+    pillarsTitle: '✧ 四柱推命 (사주) ✧',
+    mainFortuneLabel: '今日の総運',
+    luckyTitle: '✧ ラッキーアイテム ✧',
+    shareTitle: '運勢をシェア',
+    copyText: 'コピー',
+    btnBack: '↩ もう一度見る',
+    scoreLabel: '運勢',
+    pillarLabels: ['年柱', '月柱', '日柱', '時柱'],
+    fortuneCategories: ['恋愛運', '金運·仕事運', '健康運', '学業·成長運'],
+    fortuneIcons: ['❤', '💰', '🌿', '📖'],
+    luckyLabels: { color: 'ラッキーカラー', number: 'ラッキーナンバー', direction: '吉方位', time: '吉時', item: 'ラッキーアイテム' },
+    genderMale: '♂ 男性',
+    genderFemale: '♀ 女性',
+    calSolar: '新暦（グレゴリオ）',
+    calLunar: '旧暦（太陰暦）',
+    copied: '✓ クリップボードにコピーしました！',
+    scoreDescs: ['厳しい一日', '平凡な一日', '普通', '良い日', '吉日', '大吉日', '最高の日'],
+    shareMsg: (name, score) => `✨ ${name}の今日の運勢: ${score}/100 — 神秘の運勢 🔮`
+  },
+  zh: {
+    heroTitle: '神秘占卜',
+    heroSub: '揭示宇宙今日为您安排的秘密',
+    formTitle: '✧ 请输入您的出生信息 ✧',
+    labelName: '姓名',
+    labelBirthDate: '出生日期',
+    labelBirthTime: '出生时间',
+    labelGender: '性别（用于四柱）',
+    labelCalendar: '历法类型',
+    btnReveal: '查看今日运势',
+    loadingTexts: ['星辰正在排列...', '翻阅古老典籍中...', '感应宇宙能量中...'],
+    pillarsTitle: '✧ 四柱八字 ✧',
+    mainFortuneLabel: '今日总运',
+    luckyTitle: '✧ 幸运物品 ✧',
+    shareTitle: '分享运势',
+    copyText: '复制',
+    btnBack: '↩ 重新查看',
+    scoreLabel: '运势',
+    pillarLabels: ['年柱', '月柱', '日柱', '时柱'],
+    fortuneCategories: ['感情运', '财运·事业运', '健康运', '学业·成长运'],
+    fortuneIcons: ['❤', '💰', '🌿', '📖'],
+    luckyLabels: { color: '幸运色', number: '幸运数字', direction: '吉利方位', time: '吉时', item: '幸运物品' },
+    genderMale: '♂ 男',
+    genderFemale: '♀ 女',
+    calSolar: '阳历（公历）',
+    calLunar: '阴历（农历）',
+    copied: '✓ 已复制到剪贴板！',
+    scoreDescs: ['艰难的一天', '平淡的一天', '一般', '较好的一天', '吉日', '大吉之日', '极好的一天'],
+    shareMsg: (name, score) => `✨ ${name}今日运势: ${score}/100 — 神秘占卜 🔮`
+  },
+  es: {
+    heroTitle: 'Oráculo Místico',
+    heroSub: 'Descubre los secretos que el cosmos guarda para ti hoy',
+    formTitle: '✧ Ingresa tus datos de nacimiento ✧',
+    labelName: 'Tu Nombre',
+    labelBirthDate: 'Fecha de Nacimiento',
+    labelBirthTime: 'Hora de Nacimiento',
+    labelGender: 'Género (para Saju)',
+    labelCalendar: 'Tipo de Calendario',
+    btnReveal: 'Revelar mi Fortuna',
+    loadingTexts: ['Las estrellas se están alineando...', 'Consultando los pergaminos antiguos...', 'Leyendo las energías cósmicas...'],
+    pillarsTitle: '✧ Cuatro Pilares del Destino (사주) ✧',
+    mainFortuneLabel: 'El Oráculo de Hoy',
+    luckyTitle: '✧ Amuletos de la Suerte ✧',
+    shareTitle: 'Comparte tu Fortuna',
+    copyText: 'Copiar',
+    btnBack: '↩ Leer de Nuevo',
+    scoreLabel: 'Fortuna',
+    pillarLabels: ['Año', 'Mes', 'Día', 'Hora'],
+    fortuneCategories: ['Amor y Corazón', 'Carrera y Riqueza', 'Salud y Vitalidad', 'Sabiduría y Crecimiento'],
+    fortuneIcons: ['❤', '💰', '🌿', '📖'],
+    luckyLabels: { color: 'Color de Suerte', number: 'Número de Suerte', direction: 'Dirección', time: 'Mejor Hora', item: 'Amuleto' },
+    genderMale: '♂ Masculino',
+    genderFemale: '♀ Femenino',
+    calSolar: 'Solar (Gregoriano)',
+    calLunar: 'Lunar (Coreano)',
+    copied: '✓ ¡Copiado al portapapeles!',
+    scoreDescs: ['Desafiante', 'Modesto', 'Promedio', 'Bueno', 'Auspicioso', 'Excelente', 'Extraordinario'],
+    shareMsg: (name, score) => `✨ La fortuna de ${name} hoy: ${score}/100 — Oráculo Místico 🔮`
+  }
+};
+
+let currentLang = 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach((b, i) => {
+    b.classList.toggle('active', ['en','ko','ja','zh','es'][i] === lang);
+  });
+  const L = LANGS[lang];
+  document.getElementById('heroTitle').textContent = L.heroTitle;
+  document.getElementById('heroSub').textContent = L.heroSub;
+  document.getElementById('formTitle').textContent = L.formTitle;
+  document.getElementById('labelName').textContent = L.labelName;
+  document.getElementById('labelBirthDate').textContent = L.labelBirthDate;
+  document.getElementById('labelBirthTime').textContent = L.labelBirthTime;
+  document.getElementById('labelGender').textContent = L.labelGender;
+  document.getElementById('labelCalendar').textContent = L.labelCalendar;
+  document.getElementById('btnRevealText').textContent = L.btnReveal;
+  document.getElementById('pillarsTitle').textContent = L.pillarsTitle;
+  document.getElementById('mainFortuneLabel').textContent = L.mainFortuneLabel;
+  document.getElementById('luckyTitle').textContent = L.luckyTitle;
+  document.getElementById('shareTitle').textContent = L.shareTitle;
+  document.getElementById('copyText').textContent = L.copyText;
+  document.getElementById('btnBack').textContent = L.btnBack;
+
+  // Update gender/calendar select options
+  const genderSel = document.getElementById('inputGender');
+  if (genderSel) {
+    genderSel.options[0].textContent = L.genderMale;
+    genderSel.options[1].textContent = L.genderFemale;
+  }
+  const calSel = document.getElementById('inputCalendar');
+  if (calSel) {
+    calSel.options[0].textContent = L.calSolar;
+    calSel.options[1].textContent = L.calLunar;
+  }
+}
+
+/* ═══════════════════════════════════════
+   SAJU (四柱) ENGINE
+═══════════════════════════════════════ */
+const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const STEMS_KO = ['갑','을','병','정','무','기','경','신','임','계'];
+const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const BRANCHES_KO = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+const ZODIAC_EN = ['Rat','Ox','Tiger','Rabbit','Dragon','Snake','Horse','Goat','Monkey','Rooster','Dog','Pig'];
+const ELEMENTS = ['Wood','Fire','Earth','Metal','Water'];
+const ELEMENTS_KO = ['목','화','토','금','수'];
+const ELEMENTS_ZH = ['木','火','土','金','水'];
+
+// Stem → element index (0=Wood,1=Fire,2=Earth,3=Metal,4=Water)
+const STEM_ELEMENT = [0,0,1,1,2,2,3,3,4,4];
+// Branch → element index
+const BRANCH_ELEMENT = [4,2,0,0,2,1,1,2,3,3,2,4];
+
+function getYearPillar(year) {
+  const stemIdx = (year - 4) % 10;
+  const branchIdx = (year - 4) % 12;
+  return { stem: stemIdx < 0 ? stemIdx+10 : stemIdx, branch: branchIdx < 0 ? branchIdx+12 : branchIdx };
+}
+
+function getMonthPillar(year, month) {
+  // Simplified month pillar
+  const yearStem = (year - 4) % 10;
+  const baseMonth = ((yearStem % 5) * 2 + month + 1) % 10;
+  const branchIdx = (month + 1) % 12; // month branches: 인(2)~축(1)
+  return { stem: baseMonth < 0 ? baseMonth+10 : baseMonth, branch: branchIdx };
+}
+
+function getDayPillar(year, month, day) {
+  // JD-based day calculation
+  const a = Math.floor((14 - month) / 12);
+  const y = year + 4800 - a;
+  const m = month + 12 * a - 3;
+  const jd = day + Math.floor((153*m+2)/5) + 365*y + Math.floor(y/4) - Math.floor(y/100) + Math.floor(y/400) - 32045;
+  const stemIdx = (jd + 9) % 10;
+  const branchIdx = (jd + 1) % 12;
+  return { stem: stemIdx < 0 ? stemIdx+10 : stemIdx, branch: branchIdx < 0 ? branchIdx+12 : branchIdx };
+}
+
+function getHourPillar(hour, dayStem) {
+  const branchIdx = Math.floor((hour + 1) / 2) % 12;
+  const stemIdx = ((dayStem % 5) * 2 + branchIdx) % 10;
+  return { stem: stemIdx, branch: branchIdx };
+}
+
+function pillarElement(stemIdx, branchIdx) {
+  return STEM_ELEMENT[stemIdx]; // simplified: use stem element
+}
+
+function calcSaju(year, month, day, hour) {
+  const yp = getYearPillar(year);
+  const mp = getMonthPillar(year, month);
+  const dp = getDayPillar(year, month, day);
+  const hp = getHourPillar(hour, dp.stem);
+  return [yp, mp, dp, hp];
+}
+
+/* ═══════════════════════════════════════
+   FORTUNE GENERATION
+═══════════════════════════════════════ */
+const LOVE_FORTUNE = {
+  en: [
+    "Venus aligns with your birth star — romantic energy flows abundantly. An unexpected encounter may kindle a flame that warms your heart for seasons to come.",
+    "The Moon whispers of longing. Those bound by existing ties will find renewed tenderness; those unattached may feel the quiet pull of destiny drawing near.",
+    "Your heart chakra radiates warmth today. Express what has long been left unspoken, for the cosmos favors the brave and the sincere.",
+    "A shadow crosses the path of love — patience is your greatest ally. Do not force what must bloom naturally in its own sacred time.",
+    "Jupiter's influence brings joy and laughter into your relationships. Share a meal, share a smile; intimacy deepens in the simplest of moments.",
+    "The stars counsel caution in matters of the heart. Guard your trust carefully, for not all who smile do so with pure intention.",
+    "A golden thread of fate binds you to someone near. Open your eyes — the one you seek may already stand before you."
+  ],
+  ko: [
+    "금성이 당신의 탄생별과 정렬됩니다 — 낭만적인 에너지가 풍부하게 흐릅니다. 예상치 못한 만남이 오랫동안 마음을 따뜻하게 할 불꽃을 피울 수 있습니다.",
+    "달이 그리움을 속삭입니다. 기존 인연은 새로운 애정을 발견하고, 솔로는 운명의 조용한 부름을 느낄 수 있습니다.",
+    "오늘 당신의 심장 차크라는 따뜻함을 발산합니다. 오랫동안 말하지 못했던 것을 표현하세요. 우주는 용감하고 진실된 자를 응원합니다.",
+    "사랑의 길에 그림자가 드리웁니다 — 인내가 가장 큰 동반자입니다. 자연스럽게 피어나야 할 것을 억지로 서두르지 마세요.",
+    "목성의 영향으로 인간관계에 기쁨과 웃음이 찾아옵니다. 함께 식사하고 미소 지으세요. 친밀감은 가장 소박한 순간에 깊어집니다.",
+    "별들은 마음의 문제에서 신중함을 권고합니다. 모든 미소가 순수한 의도에서 비롯되지 않으니 신뢰를 소중히 지키세요.",
+    "운명의 금실이 당신과 가까운 누군가를 이어줍니다. 눈을 열어보세요 — 찾던 그 사람이 이미 당신 앞에 있을지 모릅니다."
+  ],
+  ja: [
+    "金星が誕生星と整列します — ロマンティックなエネルギーが豊かに流れます。思わぬ出会いが、長く心を温める炎を灯すかもしれません。",
+    "月が切なさをささやきます。既存の絆はより深い愛情を見出し、独身者は運命の静かな呼びかけを感じるかもしれません。",
+    "今日はハートのチャクラが温もりを放っています。長い間言えなかったことを伝えてください。宇宙は勇敢で誠実な者を応援します。",
+    "愛の道に影が差します — 忍耐が最大の味方です。自然に咲くべきものを無理に急かさないでください。",
+    "木星の影響で人間関係に喜びと笑いが訪れます。共に食事をして微笑んでください。最も素朴な瞬間に親密さが深まります。",
+    "星は心の問題で慎重さを勧めます。すべての笑顔が純粋な意図から来るわけではないので、信頼を大切に守ってください。",
+    "運命の金の糸があなたと近くにいる誰かを結びます。目を開けてください — あなたが探している人がすでにあなたの前にいるかもしれません。"
+  ],
+  zh: [
+    "金星与您的出生星对齐——浪漫能量充盈流动。意外的邂逅可能点燃一段温暖心灵的火焰。",
+    "月亮轻诉相思之情。现有缘分将焕发新的温柔，单身者可能感受到命运悄然靠近。",
+    "今日您的心轮散发温暖。说出那些长久未表达的话语，宇宙庇佑勇敢真诚之人。",
+    "爱情之路出现阴影——耐心是您最好的盟友。不要强迫那些需要在适当时机自然绽放的事物。",
+    "木星的影响为人际关系带来欢笑与喜悦。共享一顿饭，交换一个微笑，亲密在最平凡的时刻中加深。",
+    "星辰建议在感情事务上保持谨慎。并非所有微笑都出于纯粹的意图，请珍视并守护您的信任。",
+    "命运的金丝将您与身边的某人相连。睁开双眼——您寻找的人可能已经站在您面前。"
+  ],
+  es: [
+    "Venus se alinea con tu estrella natal — la energía romántica fluye abundantemente. Un encuentro inesperado puede encender una llama que calienta tu corazón por temporadas venideras.",
+    "La Luna susurra de añoranza. Los que tienen lazos existentes encontrarán ternura renovada; los desapegados pueden sentir el tranquilo llamado del destino acercándose.",
+    "Tu chakra del corazón irradia calidez hoy. Expresa lo que ha quedado sin decir, pues el cosmos favorece a los valientes y sinceros.",
+    "Una sombra cruza el camino del amor — la paciencia es tu mayor aliada. No fuerces lo que debe florecer naturalmente en su propio tiempo sagrado.",
+    "La influencia de Júpiter trae alegría y risas a tus relaciones. Comparte una comida, comparte una sonrisa; la intimidad se profundiza en los momentos más simples.",
+    "Las estrellas aconsejan cautela en asuntos del corazón. Guarda tu confianza cuidadosamente, pues no todos los que sonríen lo hacen con intención pura.",
+    "Un hilo dorado del destino te une a alguien cercano. Abre los ojos — quien buscas puede ya estar ante ti."
+  ]
+};
+
+const CAREER_FORTUNE = {
+  en: [
+    "Mercury sharpens your intellect today. A bold proposal or creative idea will find receptive ears — trust your instincts and speak your vision.",
+    "Financial currents flow gently in your favor. Small but steady gains accumulate; avoid impulsive spending and let wealth grow quietly.",
+    "A colleague's words carry hidden meaning. Listen beyond the surface — collaboration may unlock doors that solitary effort cannot open.",
+    "Saturn reminds you that discipline is the seed of greatness. The tedious work you do today becomes the foundation of tomorrow's triumph.",
+    "An opportunity arrives disguised as an obstacle. Examine challenges closely, for within difficulty lies the chrysalis of extraordinary fortune.",
+    "Your professional star shines brightly. Superiors take notice of your diligence; recognition and reward are quietly approaching on the horizon.",
+    "Guard your resources carefully. Today is better suited to planning than to action. A patient strategy will yield richer harvest than hasty movement."
+  ],
+  ko: [
+    "오늘 수성이 당신의 지성을 날카롭게 합니다. 대담한 제안이나 창의적인 아이디어가 수용적인 귀를 찾을 것입니다 — 본능을 믿고 비전을 말하세요.",
+    "재정의 흐름이 당신에게 유리하게 흐릅니다. 작지만 꾸준한 이익이 쌓입니다. 충동적인 지출을 피하고 부가 조용히 성장하도록 두세요.",
+    "동료의 말에 숨겨진 의미가 있습니다. 표면 너머를 들으세요 — 협력이 혼자서는 열 수 없는 문을 열 수 있습니다.",
+    "토성은 규율이 위대함의 씨앗임을 상기시켜 줍니다. 오늘 하는 지루한 일이 내일 승리의 토대가 됩니다.",
+    "기회가 장애물로 위장해 찾아옵니다. 도전을 자세히 살펴보세요. 어려움 속에 비범한 행운의 번데기가 있습니다.",
+    "당신의 직업 별이 밝게 빛납니다. 상사들이 당신의 성실함을 알아챕니다. 인정과 보상이 조용히 지평선에서 다가오고 있습니다.",
+    "자원을 조심스럽게 지키세요. 오늘은 행동보다 계획에 더 적합합니다. 인내하는 전략이 성급한 움직임보다 더 풍성한 수확을 줄 것입니다."
+  ],
+  ja: [
+    "今日、水星があなたの知性を鋭くします。大胆な提案や創造的なアイデアが受け入れられる耳を見つけるでしょう — 直感を信じてビジョンを語ってください。",
+    "財務の流れがあなたに有利に流れます。小さいながらも着実な利益が積み重なります。衝動的な支出を避けて、富が静かに成長するようにしてください。",
+    "同僚の言葉に隠れた意味があります。表面の向こうを聞いてください — 協力が一人では開けない扉を開けるかもしれません。",
+    "土星は規律が偉大さの種であることを思い出させてくれます。今日する退屈な仕事が明日の勝利の基盤になります。",
+    "機会が障害物に偽装してやってきます。挑戦を詳しく調べてください。困難の中に非凡な幸運の蛹があります。",
+    "あなたの職業の星が明るく輝いています。上司があなたの勤勉さに気づいています。認識と報酬が静かに地平線で近づいています。",
+    "リソースを慎重に守ってください。今日は行動よりも計画に適しています。忍耐強い戦略が急いだ動きよりも豊かな収穫をもたらすでしょう。"
+  ],
+  zh: [
+    "今日水星磨砺您的智慧。大胆的提案或创意将找到接受的耳朵——信任您的直觉，说出您的愿景。",
+    "财务流向对您有利。小而稳定的收益积累，避免冲动消费，让财富静静增长。",
+    "同事的话语含有隐藏的含义。聆听表面之下的内容——合作可能打开独自努力无法开启的门。",
+    "土星提醒您，纪律是伟大的种子。今天所做的枯燥工作将成为明日胜利的基础。",
+    "机会伪装成障碍而来。仔细审视挑战，因为困难中潜藏着非凡财运的茧。",
+    "您的职业之星闪耀光芒。上级注意到您的勤奋，认可与奖励正悄然在地平线上靠近。",
+    "谨慎守护您的资源。今日更适合规划而非行动。耐心的策略将比匆忙的行动带来更丰盛的收获。"
+  ],
+  es: [
+    "Mercurio agudiza tu intelecto hoy. Una propuesta audaz o idea creativa encontrará oídos receptivos — confía en tus instintos y habla tu visión.",
+    "Las corrientes financieras fluyen gentilmente a tu favor. Ganancias pequeñas pero constantes se acumulan; evita el gasto impulsivo y deja que la riqueza crezca silenciosamente.",
+    "Las palabras de un colega tienen significado oculto. Escucha más allá de la superficie — la colaboración puede abrir puertas que el esfuerzo solitario no puede.",
+    "Saturno te recuerda que la disciplina es la semilla de la grandeza. El trabajo tedioso que haces hoy se convierte en la base del triunfo de mañana.",
+    "Una oportunidad llega disfrazada de obstáculo. Examina los desafíos de cerca, pues en la dificultad yace la crisálida de la fortuna extraordinaria.",
+    "Tu estrella profesional brilla intensamente. Los superiores notan tu diligencia; el reconocimiento y la recompensa se acercan silenciosamente en el horizonte.",
+    "Guarda tus recursos cuidadosamente. Hoy es más adecuado para planificar que para actuar. Una estrategia paciente rendirá cosecha más rica que el movimiento apresurado."
+  ]
+};
+
+const HEALTH_FORTUNE = {
+  en: [
+    "Your vitality surges like a spring river. Physical activity is greatly favored; a walk in nature will amplify your body's natural healing energies.",
+    "Rest is the medicine your body silently requests. Honor the wisdom of stillness today — overstimulation weakens what patience restores.",
+    "Drink deeply of pure water and breathe with intention. Your body is a temple; small rituals of care today prevent greater ailments tomorrow.",
+    "The Wood element strengthens your liver and eyes today. Leafy greens and morning stretching will align your physical energy beautifully.",
+    "A subtle tension resides in your shoulders and neck. Take moments to release what you carry — the body speaks truth that the mind often denies.",
+    "Your immune system rises with the morning star. Today is auspicious for beginning new health habits that will serve you well through the coming season.",
+    "Balance is the key to your wellbeing. Do not push beyond your limits, yet do not permit yourself to fall into lethargy. Walk the middle path."
+  ],
+  ko: [
+    "당신의 생명력이 봄 강처럼 솟구칩니다. 신체 활동이 매우 유리합니다. 자연 속 산책이 몸의 자연 치유 에너지를 증폭시킬 것입니다.",
+    "휴식은 몸이 조용히 요청하는 약입니다. 오늘은 고요함의 지혜를 존중하세요 — 과도한 자극은 인내로 회복되는 것을 약화시킵니다.",
+    "깨끗한 물을 충분히 마시고 의도적으로 호흡하세요. 당신의 몸은 신전입니다. 오늘 작은 돌봄 의식이 내일 더 큰 질병을 예방합니다.",
+    "목 기운이 오늘 간과 눈을 강화합니다. 녹색 채소와 아침 스트레칭이 신체 에너지를 아름답게 정렬시킬 것입니다.",
+    "어깨와 목에 미묘한 긴장이 있습니다. 잠시 시간을 내어 짊어진 것을 내려놓으세요 — 몸은 마음이 종종 부정하는 진실을 말합니다.",
+    "면역 체계가 새벽별과 함께 일어납니다. 오늘은 다가오는 계절 내내 도움이 될 새로운 건강 습관을 시작하기에 길한 날입니다.",
+    "균형이 건강의 열쇠입니다. 한계를 넘지 말되, 나태함에 빠지지도 마세요. 중도를 걸으세요."
+  ],
+  ja: [
+    "あなたの生命力が春の川のように湧き上がります。身体活動が非常に有利です。自然の中を歩くことで身体の自然治癒エネルギーが増幅します。",
+    "休息は体が静かに求める薬です。今日は静けさの知恵を大切にしてください — 過度な刺激は忍耐が回復するものを弱めます。",
+    "清潔な水をたっぷり飲み、意図を持って呼吸してください。あなたの体は神殿です。今日の小さな自己ケアの儀式が明日のより大きな病気を予防します。",
+    "木のエネルギーが今日の肝臓と目を強化します。葉物野菜と朝のストレッチが体のエネルギーを美しく整列させます。",
+    "肩と首に微妙な緊張があります。しばらく時間を取って抱えているものを降ろしてください — 体は心がしばしば否定する真実を語ります。",
+    "免疫系が明けの明星と共に高まります。今日は来る季節を通じて役立つ新しい健康習慣を始めるのに吉日です。",
+    "バランスが健康の鍵です。限界を超えないようにしつつも、怠惰に陥らないでください。中道を歩んでください。"
+  ],
+  zh: [
+    "您的活力如春河般涌动。体育活动极为有利，在自然中散步将增强您身体的自然疗愈能量。",
+    "休息是身体静静请求的药物。今日尊重静止的智慧——过度刺激会削弱耐心所能恢复的东西。",
+    "深饮清水，有意识地呼吸。您的身体是神殿，今日小小的关怀仪式将预防明日更大的疾患。",
+    "木元素今日强化您的肝脏和双眼。绿叶蔬菜和晨间伸展将美妙地对齐您的身体能量。",
+    "肩颈部有微妙的紧张。花时间放下所承载的重量——身体诉说着心灵常常否认的真实。",
+    "免疫系统随晨星升起。今日是开始新健康习惯的吉日，这些习惯将在接下来的季节中为您服务。",
+    "平衡是健康之钥。不要超越极限，但也不要陷入懈怠。走中道。"
+  ],
+  es: [
+    "Tu vitalidad surge como un río de primavera. La actividad física es muy favorecida; un paseo por la naturaleza amplificará las energías curativas naturales de tu cuerpo.",
+    "El descanso es la medicina que tu cuerpo silenciosamente solicita. Honra la sabiduría de la quietud hoy — la sobreestimulación debilita lo que la paciencia restaura.",
+    "Bebe abundantemente de agua pura y respira con intención. Tu cuerpo es un templo; los pequeños rituales de cuidado hoy previenen mayores dolencias mañana.",
+    "El elemento Madera fortalece tu hígado y ojos hoy. Las verduras de hoja y los estiramientos matutinos alinearán tu energía física bellamente.",
+    "Una tensión sutil reside en tus hombros y cuello. Tómate momentos para liberar lo que cargas — el cuerpo habla verdad que la mente a menudo niega.",
+    "Tu sistema inmune se eleva con la estrella matutina. Hoy es auspicioso para comenzar nuevos hábitos de salud que te servirán bien en la temporada venidera.",
+    "El equilibrio es la clave de tu bienestar. No te empujes más allá de tus límites, pero no te permitas caer en la letargia. Camina el camino del medio."
+  ]
+};
+
+const WISDOM_FORTUNE = {
+  en: [
+    "The Sage archetype awakens within you today. Your intuition pierces veils that logic alone cannot lift — trust the quiet knowing that arises from stillness.",
+    "A book, a conversation, or an idle moment of reflection holds a key you have long sought. Pay attention to what crosses your path unexpectedly.",
+    "Your mind is fertile ground. Plant seeds of curiosity and water them with focused study; the harvest of understanding comes to the persistent seeker.",
+    "Old patterns ask to be examined. The ancient masters taught that self-knowledge is the root of all wisdom — look within before looking outward.",
+    "Communication flows with unusual clarity today. Express your ideas in writing or speech; your words carry influence that outlasts the moment.",
+    "The cosmos invites you to release what no longer serves your growth. Wisdom is not accumulation alone — it is also the art of graceful release.",
+    "A mentor, teacher, or elder holds wisdom meant for your ears today. Seek their counsel with humility and you will receive more than you asked for."
+  ],
+  ko: [
+    "오늘 당신 안에서 현자의 원형이 깨어납니다. 당신의 직관은 논리만으로는 들어올릴 수 없는 베일을 뚫습니다 — 고요함에서 일어나는 조용한 앎을 신뢰하세요.",
+    "책, 대화, 또는 한가한 성찰의 순간이 오랫동안 찾던 열쇠를 가지고 있습니다. 예상치 못하게 당신의 길을 가로지르는 것에 주의를 기울이세요.",
+    "당신의 마음은 비옥한 토양입니다. 호기심의 씨앗을 심고 집중적인 공부로 물을 주세요. 이해의 수확은 끈질기게 추구하는 자에게 옵니다.",
+    "오래된 패턴이 검토받기를 원합니다. 고대 스승들은 자기 인식이 모든 지혜의 뿌리라고 가르쳤습니다 — 밖을 보기 전에 안을 보세요.",
+    "오늘 의사소통이 비범한 명료함으로 흐릅니다. 글이나 말로 아이디어를 표현하세요. 당신의 말은 그 순간을 초월하는 영향력을 지닙니다.",
+    "우주는 당신의 성장에 더 이상 도움이 되지 않는 것을 놓아주도록 초대합니다. 지혜는 쌓아가는 것만이 아닙니다 — 우아하게 내려놓는 기술이기도 합니다.",
+    "오늘 스승, 선생님, 또는 어른이 당신의 귀를 위한 지혜를 가지고 있습니다. 겸손함으로 그들의 조언을 구하면 청한 것보다 더 많은 것을 받을 것입니다."
+  ],
+  ja: [
+    "今日、あなたの中で賢者の原型が目覚めます。あなたの直感は論理だけでは持ち上げられないベールを貫きます — 静けさから生まれる静かな知識を信頼してください。",
+    "本、会話、またはぼんやりとした省察の瞬間が、長い間求めていた鍵を持っています。予期せずあなたの道を横切るものに注意を払ってください。",
+    "あなたの心は肥沃な土地です。好奇心の種を植えて集中的な学習で水を与えてください。理解の収穫は粘り強く求める者に来ます。",
+    "古いパターンが検討を求めています。古代の師たちは自己認識がすべての知恵の根であると教えました — 外を見る前に内を見てください。",
+    "今日はコミュニケーションが非凡な明晰さで流れます。文章や言葉でアイデアを表現してください。あなたの言葉はその瞬間を超えた影響力を持ちます。",
+    "宇宙はあなたの成長にもはや役立たないものを手放すよう招いています。知恵は蓄積だけではありません — それはまた優雅な手放しの技術でもあります。",
+    "今日、師匠、教師、または年長者があなたの耳のための知恵を持っています。謙虚さで彼らのアドバイスを求めると、求めた以上のものを受け取るでしょう。"
+  ],
+  zh: [
+    "今日您内心的智者原型觉醒。您的直觉穿透了单纯逻辑无法揭开的面纱——信任从静默中升起的宁静智知。",
+    "一本书、一次对话或一个闲暇的反思时刻，持有您长久寻找的钥匙。注意那些意外出现在您路上的事物。",
+    "您的心灵是肥沃的土地。播下好奇的种子，以专注的学习浇灌；理解的收获来自坚持不懈的求索者。",
+    "古老的模式请求被审视。古代圣贤教导说，自我认知是所有智慧的根源——向内看，再向外看。",
+    "今日沟通以非凡的清晰度流动。通过文字或言语表达您的想法；您的话语携带着超越当下时刻的影响力。",
+    "宇宙邀请您放下不再服务于成长的东西。智慧不仅仅是积累——它也是优雅放手的艺术。",
+    "今日一位导师、老师或长者持有为您准备的智慧。以谦逊之心寻求他们的建议，您将获得比所求更多的东西。"
+  ],
+  es: [
+    "El arquetipo del Sabio despierta dentro de ti hoy. Tu intuición penetra velos que la lógica sola no puede levantar — confía en el saber silencioso que surge de la quietud.",
+    "Un libro, una conversación, o un momento ocioso de reflexión tiene una llave que has buscado por mucho tiempo. Presta atención a lo que cruza tu camino inesperadamente.",
+    "Tu mente es tierra fértil. Planta semillas de curiosidad y riégalas con estudio enfocado; la cosecha del entendimiento llega al buscador persistente.",
+    "Los patrones antiguos piden ser examinados. Los maestros antiguos enseñaron que el autoconocimiento es la raíz de toda sabiduría — mira hacia adentro antes de mirar hacia afuera.",
+    "La comunicación fluye con inusual claridad hoy. Expresa tus ideas por escrito o en palabras; tus palabras llevan influencia que supera el momento.",
+    "El cosmos te invita a liberar lo que ya no sirve a tu crecimiento. La sabiduría no es solo acumulación — también es el arte de la liberación elegante.",
+    "Un mentor, maestro o anciano tiene sabiduría destinada a tus oídos hoy. Busca su consejo con humildad y recibirás más de lo que pediste."
+  ]
+};
+
+const OVERALL_FORTUNE = {
+  en: [
+    "Today the heavens weave a tapestry of rare blessing around your path. The ancient masters would call this a day of 대길 — supreme auspiciousness. Move through the world with quiet confidence; what you reach for, you shall find.",
+    "The cosmic tides run steady and favorable beneath your feet. While no extraordinary wind fills your sails, a reliable current carries you forward. Tend to your duties with care and the day rewards your faithfulness.",
+    "A day of paradox awaits you — shadow and light trade partners in unexpected ways. What begins as difficulty may reveal itself as disguised fortune. Hold your center, breathe deeply, and trust the unfolding.",
+    "The stars counsel patience and deep listening today. The wisest river does not force its way but carves its path through gentle persistence. Your stillness is a form of profound action.",
+    "Fortune smiles upon your endeavors with golden warmth. Creative ventures, important conversations, and acts of courage are all blessed by celestial alignment. This is a day to dare greatly.",
+    "A gentle day of inner work and quiet reflection. The outer world may seem ordinary, but extraordinary shifts occur within. Dreams carry messages; your intuition is a precise compass today.",
+    "The Dragon of the East stirs in your favor today, awakening dormant power. Opportunities that once seemed closed have quietly opened. Step forward — the cosmos clears the way."
+  ],
+  ko: [
+    "오늘 하늘은 당신의 길 주위에 희귀한 축복의 태피스트리를 짜고 있습니다. 고대 스승들은 이것을 대길의 날이라고 부를 것입니다. 조용한 자신감으로 세상을 나아가세요. 손 뻗는 것을 찾게 될 것입니다.",
+    "우주의 조류가 당신의 발 아래 안정적이고 유리하게 흐릅니다. 비범한 바람이 돛을 가득 채우지는 않지만, 신뢰할 수 있는 해류가 당신을 앞으로 데려갑니다. 성실히 임무를 수행하면 하루가 그 충성심에 보답할 것입니다.",
+    "역설의 하루가 기다립니다 — 그림자와 빛이 예상치 못한 방식으로 파트너를 바꿉니다. 어려움으로 시작하는 것이 위장한 행운으로 밝혀질 수 있습니다. 중심을 잡고 깊이 숨 쉬며 펼쳐짐을 신뢰하세요.",
+    "별들은 오늘 인내와 깊은 경청을 권고합니다. 가장 현명한 강은 길을 강요하지 않고 부드러운 인내로 길을 만듭니다. 당신의 고요함은 심오한 행동의 한 형태입니다.",
+    "행운이 황금빛 따스함으로 당신의 노력에 미소 짓습니다. 창의적인 사업, 중요한 대화, 용기의 행동이 모두 천체 정렬로 축복받습니다. 크게 감히 도전하는 날입니다.",
+    "내면의 작업과 조용한 성찰의 부드러운 날입니다. 외부 세계는 평범해 보일 수 있지만, 내면에서 비범한 변화가 일어납니다. 꿈은 메시지를 전하고, 오늘 당신의 직관은 정밀한 나침반입니다.",
+    "동쪽의 청룡이 오늘 당신의 편에서 꿈틀거리며 잠자던 힘을 깨웁니다. 한때 닫혀 있던 기회가 조용히 열렸습니다. 앞으로 나아가세요 — 우주가 길을 엽니다."
+  ],
+  ja: [
+    "今日、天界はあなたの道の周りに希少な祝福のタペストリーを織っています。古代の師たちはこれを大吉の日と呼ぶでしょう。静かな自信で世界を進んでください。手を伸ばすものを見つけるでしょう。",
+    "宇宙の潮流があなたの足元で安定して有利に流れています。非凡な風が帆を満たすわけではありませんが、信頼できる潮流があなたを前進させます。誠実に義務を果たせば、一日がその忠誠心に報いるでしょう。",
+    "逆説の一日が待っています — 影と光が予期せぬ方法でパートナーを交換します。困難として始まるものが偽装された幸運として明らかになるかもしれません。中心を保ち、深く呼吸して、展開を信頼してください。",
+    "星は今日、忍耐と深い傾聴を勧めます。最も賢い川は道を強制せず、穏やかな忍耐で道を刻みます。あなたの静けさは深遠な行動の一形態です。",
+    "幸運が黄金の温かさであなたの努力に微笑みます。創造的なベンチャー、重要な会話、勇気の行為はすべて天体の整列に祝福されます。大胆に挑戦する日です。",
+    "内なる仕事と静かな省察の穏やかな一日です。外の世界は普通に見えるかもしれませんが、内側で非凡な変化が起こります。夢はメッセージを運び、今日のあなたの直感は正確なコンパスです。",
+    "東の青龍が今日あなたの味方で蠢き、眠っていた力を目覚めさせます。かつて閉じていた機会が静かに開きました。前に進んでください — 宇宙が道を開きます。"
+  ],
+  zh: [
+    "今日天界在您的道路周围编织着稀有祝福的挂毯。古代圣贤会称此为大吉之日。以宁静的自信走向世界；您所伸手寻求的，终将找到。",
+    "宇宙潮流在您脚下稳定而有利地流动。虽然没有非凡的风填满风帆，但可靠的海流将您向前带动。认真履行职责，这一天将回报您的忠诚。",
+    "充满悖论的一天在等待您——阴影与光明以意想不到的方式交换伴侣。以困难开始的事情可能揭示为伪装的财运。保持中心，深呼吸，相信一切的展开。",
+    "星辰今日建议耐心与深度倾听。最智慧的河流不强迫自己的道路，而是通过温和的坚持开辟路径。您的静止是深刻行动的一种形式。",
+    "财运以金色温暖微笑于您的努力。创意事业、重要对话和勇气的行动都受到天体对齐的祝福。这是大胆尝试的一天。",
+    "一个内省与静默反思的温柔之日。外部世界可能看起来普通，但内心正在发生非凡的转变。梦境传递信息；今日您的直觉是精准的罗盘。",
+    "东方青龙今日在您的庇护下蠢动，唤醒沉睡的力量。曾经关闭的机会已悄然打开。向前迈步——宇宙为您清除道路。"
+  ],
+  es: [
+    "Hoy los cielos tejen un tapiz de bendición rara alrededor de tu camino. Los maestros antiguos llamarían a esto un día de 대길 — suprema auspiciosidad. Muévete por el mundo con tranquila confianza; lo que alcances, lo encontrarás.",
+    "Las mareas cósmicas corren estables y favorables bajo tus pies. Aunque ningún viento extraordinario llena tus velas, una corriente confiable te lleva hacia adelante. Cuida tus deberes con cuidado y el día recompensa tu fidelidad.",
+    "Un día de paradoja te espera — sombra y luz intercambian parejas de maneras inesperadas. Lo que comienza como dificultad puede revelarse como fortuna disfrazada. Mantén tu centro, respira profundamente y confía en el desenvolvimiento.",
+    "Las estrellas aconsejan paciencia y escucha profunda hoy. El río más sabio no fuerza su camino sino que lo esculpe a través de la persistencia gentil. Tu quietud es una forma de acción profunda.",
+    "La fortuna sonríe a tus empresas con calidez dorada. Las aventuras creativas, conversaciones importantes y actos de coraje están todos bendecidos por la alineación celestial. Este es un día para atreverse grandemente.",
+    "Un día gentil de trabajo interior y reflexión silenciosa. El mundo exterior puede parecer ordinario, pero cambios extraordinarios ocurren dentro. Los sueños llevan mensajes; tu intuición es una brújula precisa hoy.",
+    "El Dragón del Este se agita a tu favor hoy, despertando el poder dormido. Oportunidades que antes parecían cerradas se han abierto silenciosamente. Da un paso adelante — el cosmos despeja el camino."
+  ]
+};
+
+const LUCKY_COLORS = {
+  en: ['Crimson Red','Azure Blue','Emerald Green','Golden Yellow','Ivory White','Deep Purple','Burnt Orange','Silver Grey','Jade Green','Midnight Blue'],
+  ko: ['진홍색','하늘색','에메랄드 초록','황금 노랑','상아 흰색','깊은 보라','번트 오렌지','은빛 회색','옥 초록','자정 파랑'],
+  ja: ['深紅','空色','エメラルドグリーン','黄金色','象牙白','深紫','バーントオレンジ','銀灰色','翡翠緑','深夜ブルー'],
+  zh: ['深红色','天蓝色','翡翠绿','金黄色','象牙白','深紫色','橙红色','银灰色','玉绿色','午夜蓝'],
+  es: ['Rojo Carmesí','Azul Cielo','Verde Esmeralda','Amarillo Dorado','Blanco Marfil','Púrpura Profundo','Naranja Quemado','Gris Plateado','Verde Jade','Azul Medianoche']
+};
+
+const LUCKY_DIRECTIONS = {
+  en: ['North','South','East','West','Northeast','Northwest','Southeast','Southwest'],
+  ko: ['북','남','동','서','북동','북서','남동','남서'],
+  ja: ['北','南','東','西','北東','北西','南東','南西'],
+  zh: ['北方','南方','东方','西方','东北','西北','东南','西南'],
+  es: ['Norte','Sur','Este','Oeste','Noreste','Noroeste','Sureste','Suroeste']
+};
+
+const LUCKY_ITEMS = {
+  en: ['a Crystal Pendant','a Jade Stone','a Silver Ring','a Red Thread','a Golden Coin','an Oak Leaf','a Blue Feather','a White Candle','a Moonstone','a Dried Lavender'],
+  ko: ['수정 목걸이','옥돌','은반지','붉은 실','황금 동전','떡갈나무 잎','파란 깃털','흰 초','문스톤','말린 라벤더'],
+  ja: ['水晶のペンダント','翡翠石','銀の指輪','赤い糸','黄金のコイン','オークの葉','青い羽根','白いキャンドル','ムーンストーン','ドライラベンダー'],
+  zh: ['水晶吊坠','玉石','银戒指','红线','金币','橡树叶','蓝色羽毛','白色蜡烛','月光石','干薰衣草'],
+  es: ['un Colgante de Cristal','una Piedra de Jade','un Anillo de Plata','un Hilo Rojo','una Moneda de Oro','una Hoja de Roble','una Pluma Azul','una Vela Blanca','una Piedra Luna','una Lavanda Seca']
+};
+
+const LUCKY_TIMES = {
+  en: ['Dawn (5-7am)','Morning (7-9am)','Midday (11am-1pm)','Afternoon (1-3pm)','Dusk (5-7pm)','Evening (7-9pm)','Night (9-11pm)'],
+  ko: ['새벽 (5-7시)','아침 (7-9시)','정오 (11-13시)','오후 (13-15시)','황혼 (17-19시)','저녁 (19-21시)','밤 (21-23시)'],
+  ja: ['夜明け (5-7時)','朝 (7-9時)','正午 (11-13時)','午後 (13-15時)','夕暮れ (17-19時)','夕方 (19-21時)','夜 (21-23時)'],
+  zh: ['黎明 (5-7时)','早晨 (7-9时)','正午 (11-13时)','下午 (13-15时)','黄昏 (17-19时)','傍晚 (19-21时)','夜晚 (21-23时)'],
+  es: ['Amanecer (5-7am)','Mañana (7-9am)','Mediodía (11am-1pm)','Tarde (1-3pm)','Crepúsculo (5-7pm)','Atardecer (7-9pm)','Noche (9-11pm)']
+};
+
+/* ═══════════════════════════════════════
+   MAIN LOGIC
+═══════════════════════════════════════ */
+let fortuneData = {};
+
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return (s >>> 0) / 4294967296;
+  };
+}
+
+function pick(arr, rng) {
+  return arr[Math.floor(rng() * arr.length)];
+}
+
+function pickIdx(n, rng) {
+  return Math.floor(rng() * n);
+}
+
+function revealFortune() {
+  const name = document.getElementById('inputName').value.trim();
+  const birthDate = document.getElementById('inputBirthDate').value;
+  const birthTime = document.getElementById('inputBirthTime').value;
+
+  if (!name || !birthDate) {
+    const L = LANGS[currentLang];
+    const msgs = {
+      en: 'Please enter your name and birth date.',
+      ko: '이름과 생년월일을 입력해주세요.',
+      ja: '名前と生年月日を入力してください。',
+      zh: '请输入您的姓名和出生日期。',
+      es: 'Por favor ingresa tu nombre y fecha de nacimiento.'
+    };
+    alert(msgs[currentLang]);
+    return;
+  }
+
+  const [year, month, day] = birthDate.split('-').map(Number);
+  const [hour, minute] = birthTime ? birthTime.split(':').map(Number) : [12, 0];
+
+  // Calculate saju pillars
+  const pillars = calcSaju(year, month, day, hour);
+
+  // Today's seed (birth + today)
+  const today = new Date();
+  const todaySeed = year * 100000 + month * 10000 + day * 100 +
+    today.getFullYear() * 7 + today.getMonth() * 13 + today.getDate() * 3 + hour;
+  const rng = seededRandom(todaySeed);
+
+  // Scores
+  const baseScore = 55 + Math.floor(rng() * 40);
+  const loveScore = Math.max(1, Math.min(5, Math.floor(rng() * 5) + 1));
+  const careerScore = Math.max(1, Math.min(5, Math.floor(rng() * 5) + 1));
+  const healthScore = Math.max(1, Math.min(5, Math.floor(rng() * 5) + 1));
+  const wisdomScore = Math.max(1, Math.min(5, Math.floor(rng() * 5) + 1));
+
+  // Descriptions
+  const overallIdx = Math.floor(rng() * OVERALL_FORTUNE.en.length);
+  const loveIdx = Math.floor(rng() * LOVE_FORTUNE.en.length);
+  const careerIdx = Math.floor(rng() * CAREER_FORTUNE.en.length);
+  const healthIdx = Math.floor(rng() * HEALTH_FORTUNE.en.length);
+  const wisdomIdx = Math.floor(rng() * WISDOM_FORTUNE.en.length);
+
+  // Lucky items
+  const colorIdx = Math.floor(rng() * LUCKY_COLORS.en.length);
+  const luckyNum = Math.floor(rng() * 9) + 1;
+  const dirIdx = Math.floor(rng() * LUCKY_DIRECTIONS.en.length);
+  const timeIdx = Math.floor(rng() * LUCKY_TIMES.en.length);
+  const itemIdx = Math.floor(rng() * LUCKY_ITEMS.en.length);
+
+  fortuneData = {
+    name, year, month, day, hour, pillars, today,
+    baseScore, loveScore, careerScore, healthScore, wisdomScore,
+    overallIdx, loveIdx, careerIdx, healthIdx, wisdomIdx,
+    colorIdx, luckyNum, dirIdx, timeIdx, itemIdx
+  };
+
+  // Show loading
+  document.getElementById('formSection').style.display = 'none';
+  document.getElementById('heroSection').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('result').style.display = 'none';
+
+  const L = LANGS[currentLang];
+  let ti = 0;
+  const loadInterval = setInterval(() => {
+    ti = (ti + 1) % L.loadingTexts.length;
+    document.getElementById('loadingText').textContent = L.loadingTexts[ti];
+  }, 900);
+
+  setTimeout(() => {
+    clearInterval(loadInterval);
+    document.getElementById('loading').style.display = 'none';
+    renderResult();
+    document.getElementById('result').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 2700);
+}
+
+function renderResult() {
+  const L = LANGS[currentLang];
+  const d = fortuneData;
+  const today = d.today;
+
+  // Header
+  document.getElementById('resultName').textContent = d.name;
+  const dateStr = today.toLocaleDateString(
+    currentLang === 'ko' ? 'ko-KR' :
+    currentLang === 'ja' ? 'ja-JP' :
+    currentLang === 'zh' ? 'zh-CN' :
+    currentLang === 'es' ? 'es-ES' : 'en-US',
+    { year:'numeric', month:'long', day:'numeric', weekday:'long' }
+  );
+  document.getElementById('resultDate').textContent = dateStr;
+
+  // Score ring
+  const score = d.baseScore;
+  document.getElementById('scoreRing').style.setProperty('--pct', score);
+  document.getElementById('scoreNumber').textContent = score;
+  document.getElementById('scoreLabel').textContent = L.scoreLabel;
+  const descIdx = Math.min(L.scoreDescs.length - 1, Math.floor((score - 55) / 7));
+  document.getElementById('scoreDesc').textContent = L.scoreDescs[Math.max(0, descIdx + 3)];
+
+  // Pillars
+  const el_map = {
+    en: ELEMENTS,
+    ko: ELEMENTS_KO,
+    ja: ['木','火','土','金','水'],
+    zh: ELEMENTS_ZH,
+    es: ['Madera','Fuego','Tierra','Metal','Agua']
+  };
+  const elArr = el_map[currentLang];
+  const elClass = ['el-wood','el-fire','el-earth','el-metal','el-water'];
+
+  let pillarsHTML = '';
+  d.pillars.forEach((p, i) => {
+    const elIdx = STEM_ELEMENT[p.stem];
+    const stemDisplay = STEMS[p.stem] + ' ' + STEMS_KO[p.stem];
+    const branchDisplay = BRANCHES[p.branch] + ' ' + BRANCHES_KO[p.branch];
+    pillarsHTML += `
+      <div class="pillar">
+        <span class="pillar-label">${L.pillarLabels[i]}</span>
+        <span class="pillar-stem">${STEMS[p.stem]}</span>
+        <span class="pillar-branch">${BRANCHES[p.branch]}</span>
+        <span class="pillar-element ${elClass[elIdx]}">${elArr[elIdx]}</span>
+      </div>`;
+  });
+  document.getElementById('pillarsDisplay').innerHTML = pillarsHTML;
+
+  // Main fortune
+  document.getElementById('mainFortune').textContent = OVERALL_FORTUNE[currentLang][d.overallIdx];
+
+  // Fortune grid
+  const fortunes = [
+    LOVE_FORTUNE[currentLang][d.loveIdx],
+    CAREER_FORTUNE[currentLang][d.careerIdx],
+    HEALTH_FORTUNE[currentLang][d.healthIdx],
+    WISDOM_FORTUNE[currentLang][d.wisdomIdx]
+  ];
+  const scores = [d.loveScore, d.careerScore, d.healthScore, d.wisdomScore];
+
+  let gridHTML = '';
+  L.fortuneCategories.forEach((cat, i) => {
+    const stars = Array.from({length:5}, (_,j) =>
+      `<span class="${j < scores[i] ? 'star-filled' : 'star-empty'}">★</span>`
+    ).join('');
+    gridHTML += `
+      <div class="fortune-item">
+        <span class="fortune-item-icon">${L.fortuneIcons[i]}</span>
+        <div class="fortune-item-title">${cat}</div>
+        <div class="fortune-item-score">${stars}</div>
+        <div class="fortune-item-text">${fortunes[i]}</div>
+      </div>`;
+  });
+  document.getElementById('fortuneGrid').innerHTML = gridHTML;
+
+  // Lucky items
+  const ll = L.luckyLabels;
+  const luckyData = [
+    { icon: '🎨', label: ll.color, val: LUCKY_COLORS[currentLang][d.colorIdx] },
+    { icon: '🔢', label: ll.number, val: d.luckyNum },
+    { icon: '🧭', label: ll.direction, val: LUCKY_DIRECTIONS[currentLang][d.dirIdx] },
+    { icon: '⏰', label: ll.time, val: LUCKY_TIMES[currentLang][d.timeIdx] },
+    { icon: '✨', label: ll.item, val: LUCKY_ITEMS[currentLang][d.itemIdx] }
+  ];
+  let luckyHTML = '';
+  luckyData.forEach(item => {
+    luckyHTML += `<div class="lucky-badge">${item.icon} <strong>${item.label}:</strong> ${item.val}</div>`;
+  });
+  document.getElementById('luckyItems').innerHTML = luckyHTML;
+}
+
+function goBack() {
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('heroSection').style.display = 'block';
+  document.getElementById('formSection').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ═══════════════════════════════════════
+   SHARE
+═══════════════════════════════════════ */
+function getShareText() {
+  const d = fortuneData;
+  const L = LANGS[currentLang];
+  return L.shareMsg(d.name, d.baseScore);
+}
+
+function shareTwitter() {
+  const text = encodeURIComponent(getShareText());
+  const url = `https://twitter.com/intent/tweet?text=${text}`;
+  window.open(url, '_blank', 'noopener');
+}
+
+function shareFacebook() {
+  const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(getShareText())}`;
+  window.open(url, '_blank', 'noopener');
+}
+
+function shareKakao() {
+  const text = getShareText();
+  if (navigator.share) {
+    navigator.share({ title: 'Mystic Oracle', text });
+  } else {
+    copyToClipboard(text);
+    showCopyNotice('KakaoTalk용 텍스트가 복사되었습니다!');
+  }
+}
+
+function shareLine() {
+  const text = encodeURIComponent(getShareText());
+  const url = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(window.location.href)}&text=${text}`;
+  window.open(url, '_blank', 'noopener');
+}
+
+function copyFortune() {
+  const d = fortuneData;
+  const L = LANGS[currentLang];
+  const today = d.today.toLocaleDateString();
+  const text = `${getShareText()}\n\n${OVERALL_FORTUNE[currentLang][d.overallIdx]}\n\n— ${today}`;
+  copyToClipboard(text);
+  showCopyNotice(L.copied);
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+}
+
+function showCopyNotice(msg) {
+  const el = document.getElementById('copy-notice');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+// Set today's date as default max
+const today = new Date();
+const todayStr = today.toISOString().split('T')[0];
+document.getElementById('inputBirthDate').max = todayStr;
+
+// Default placeholder name from lang
+setLang('en');
+</script>
+</body>
+</html>
