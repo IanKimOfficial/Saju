@@ -561,23 +561,23 @@ select option { background: var(--bg2); color: var(--text); }
 }
 
 .score-ring {
-  width: 100px;
-  height: 100px;
+  width: 130px;
+  height: 130px;
   border-radius: 50%;
-  border: 3px solid var(--border);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   margin: 0 auto 12px;
-  background: conic-gradient(var(--gold) calc(var(--pct)*1%), var(--surface2) 0);
+  background: conic-gradient(from -90deg, var(--gold) calc(var(--pct)*1%), var(--border) 0);
   position: relative;
+  box-shadow: 0 0 20px var(--glow);
 }
 
 .score-ring::before {
   content: '';
   position: absolute;
-  inset: 6px;
+  inset: 12px;
   border-radius: 50%;
   background: var(--surface);
 }
