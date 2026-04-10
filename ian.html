@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mystic Oracle · 신비의 운세</title>
+<title>Mystic Oracle · 신비의 운세 | Korean Saju Fortune</title>
+<meta name="description" content="Discover your destiny with Korean Saju (四柱) fortune telling. Get personalized daily fortune readings based on your birth date and time. Free online fortune teller in English, Korean, Japanese, Chinese, and Spanish.">
+<meta name="keywords" content="saju, fortune, horoscope, korean fortune telling, 사주, 운세, four pillars of destiny, daily fortune">
+<meta name="author" content="Mystic Oracle">
+<meta property="og:title" content="Mystic Oracle · 신비의 운세 | Korean Saju Fortune">
+<meta property="og:description" content="Get your personalized Saju fortune reading based on your birth date. Free daily fortune in 5 languages.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://saju.pages.dev/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mystic Oracle · 신비의 운세">
+<meta name="twitter:description" content="Get your personalized Korean Saju fortune reading. Free daily fortune in 5 languages.">
+<link rel="canonical" href="https://saju.pages.dev/">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&family=Noto+Sans+KR:wght@300;400;700&family=Noto+Sans+JP:wght@300;400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2476030220507321" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -766,13 +777,28 @@ select option { background: var(--bg2); color: var(--text); }
 /* ── Footer ── */
 footer {
   text-align: center;
-  padding: 20px 0;
+  padding: 24px 0 32px;
   color: var(--text3);
   font-size: 0.75rem;
   letter-spacing: 1px;
   font-family: 'Cinzel', serif;
-  opacity: 0.6;
+  opacity: 0.7;
 }
+footer .footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+footer .footer-links a {
+  color: var(--text3);
+  text-decoration: none;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+}
+footer .footer-links a:hover { color: var(--gold); }
 </style>
 </head>
 <body data-theme="dark">
@@ -911,6 +937,12 @@ footer {
 
   <footer>
     <p>✦ Based on Korean Saju (四柱) Fortune System ✦</p>
+    <nav class="footer-links">
+      <a href="/privacy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms of Use</a>
+      <a href="mailto:contact@mysticoracle.app">Contact</a>
+    </nav>
+    <p style="margin-top:10px;font-size:0.65rem;opacity:0.5;">© 2025 Mystic Oracle. For entertainment purposes only.</p>
   </footer>
 </div>
 
