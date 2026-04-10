@@ -236,12 +236,18 @@ header {
 @media (max-width: 560px) {
   .form-grid { grid-template-columns: 1fr; }
   .card { padding: 20px 16px; }
+  input[type="date"], input[type="time"] {
+    font-size: 0.875rem;
+    padding: 10px 8px;
+    max-width: 100%;
+  }
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 
 .form-group.full { grid-column: 1 / -1; }
@@ -654,21 +660,26 @@ select option { background: var(--bg2); color: var(--text); }
 
 .btn-back {
   background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text3);
-  padding: 10px 20px;
+  border: 1.5px solid var(--gold);
+  color: var(--gold);
+  padding: 14px 24px;
   border-radius: 8px;
   cursor: pointer;
   font-family: 'Cinzel', serif;
-  font-size: 0.8rem;
-  letter-spacing: 1px;
-  margin-top: 20px;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  margin-top: 28px;
   display: block;
   width: 100%;
   transition: all var(--transition);
   text-align: center;
+  text-shadow: 0 0 10px var(--glow);
 }
-.btn-back:hover { border-color: var(--gold); color: var(--gold); }
+.btn-back:hover {
+  background: rgba(201,168,76,0.12);
+  box-shadow: 0 0 18px var(--glow);
+  transform: translateY(-1px);
+}
 
 /* ── Decorative corners ── */
 .corner-ornament {
@@ -982,7 +993,7 @@ const LANGS = {
     luckyTitle: '✧ 행운 아이템 ✧',
     shareTitle: '운세 공유하기',
     copyText: '복사',
-    btnBack: '↩ 다시 보기',
+    btnBack: '↩ 처음으로 돌아가기',
     scoreLabel: '운세',
     pillarLabels: ['년주', '월주', '일주', '시주'],
     fortuneCategories: ['애정운', '재물·직업운', '건강운', '학업·성장운'],
